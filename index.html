@@ -4,67 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#f8fafc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Agenda Táctica 2026</title>
+    
+    <!-- ========================================== -->
+    <!-- ICONO DE APP (Calendar Clock Style)        -->
+    <!-- ========================================== -->
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2910/2910768.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2910/2910768.png">
+    <!-- Icono web (Uicons) para uso interno si se requiere -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; user-select: none; }
-        .bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 32px 32px; opacity: 0.3; pointer-events: none; z-index: 0; }
-        .timeline-track { position: absolute; left: 4rem; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e1 100%); z-index: 0; border-radius: 99px; }
-        .event-card { transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: pointer; }
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; user-select: none; overscroll-behavior-y: none; }
+        
+        /* Capas Z-Index Estrictas */
+        .z-back { z-index: 0; }
+        .z-content { z-index: 10; }
+        .z-nav { z-index: 40; }
+        .z-fab { z-index: 50; }
+        .z-modal-overlay { z-index: 60; }
+        .z-modal-card { z-index: 70; }
+
+        .bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 32px 32px; opacity: 0.3; pointer-events: none; }
+        .timeline-track { position: absolute; left: 4rem; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, #e2e8f0 0%, #cbd5e1 100%); border-radius: 99px; }
+        
+        .event-card { transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: pointer; position: relative; }
         .event-card:active { transform: scale(0.98); opacity: 0.9; }
+        
         .skipped-card { opacity: 0.5 !important; filter: grayscale(100%) !important; }
         .skipped-text { text-decoration: line-through !important; color: #94a3b8 !important; }
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
         .pt-safe { padding-top: env(safe-area-inset-top); }
         
-        /* ESTILOS DEL ASISTENTE TÉCNICO (COPILOT) */
-        .copilot-bubble { 
-            background: #fff; 
-            border: 1px solid #e0e7ff;
-            font-size: 0.75rem; 
-            color: #4f46e5; 
-            position: relative; 
-            margin-left: 4.5rem; /* Ajustado para alinear con tarjetas */
-            margin-bottom: 1rem; 
-            margin-right: 1rem;
-            padding: 0.75rem 1rem; 
-            border-radius: 1rem; 
-            border-top-left-radius: 0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-            animation: fadeIn 0.5s ease-out;
-        }
-        .copilot-icon {
-            position: absolute; left: -1.75rem; top: 50%; transform: translateY(-50%);
-            background: #6366f1; color: white; width: 1.5rem; height: 1.5rem;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 0.7rem; z-index: 10; box-shadow: 0 0 0 4px #f8fafc;
-        }
+        .copilot-bubble { background: #fff; border: 1px solid #e0e7ff; font-size: 0.75rem; color: #4f46e5; position: relative; margin-left: 4.5rem; margin-bottom: 1rem; margin-right: 1rem; padding: 0.75rem 1rem; border-radius: 1rem; border-top-left-radius: 0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); animation: fadeIn 0.5s ease-out; }
+        .copilot-icon { position: absolute; left: -1.75rem; top: 50%; transform: translateY(-50%); background: #6366f1; color: white; width: 1.5rem; height: 1.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; z-index: 10; box-shadow: 0 0 0 4px #f8fafc; }
         
-        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(16px); border-top: 1px solid rgba(0,0,0,0.03); }
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05); }
         .live-glow { animation: pulse-soft 2s infinite; border-color: #818cf8 !important; }
+        
         @keyframes pulse-soft { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.2); } 70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); } 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
         .goal-card { transition: all 0.3s ease; border: 1px solid #e2e8f0; }
         .goal-card.done { opacity: 0.6; background-color: #f8fafc; border-color: #f1f5f9; }
         .goal-card.done h4 { text-decoration: line-through; color: #94a3b8; }
         .progress-bar-striped { background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent); background-size: 1rem 1rem; }
+        
         .action-btn { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         .btn-confirm-delete { background-color: #ef4444 !important; color: white !important; border-color: #ef4444 !important; transition: all 0.2s ease; }
+        
         .cat-select { position: relative; }
-        .cat-delete-btn { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: #ef4444; color: white; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; z-index: 20; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 2px solid white; cursor: pointer; }
+        .cat-delete-btn { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background: #ef4444; color: white; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; z-index: 20; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 2px solid white; cursor: pointer; }
         .checklist-item-actions { opacity: 0.6; transition: opacity 0.2s; }
         .group:hover .checklist-item-actions { opacity: 1; }
+        
+        /* Modal Transitions */
+        .modal-card { transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .modal-card.active { transform: translateY(0); }
     </style>
 </head>
 <body class="text-slate-800 h-screen flex flex-col overflow-hidden relative bg-slate-50">
 
-    <div class="bg-pattern"></div>
+    <div class="bg-pattern z-back"></div>
 
     <!-- HEADER -->
-    <header class="bg-white/80 backdrop-blur-xl px-6 pt-safe pb-4 sticky top-0 z-30 border-b border-slate-100">
+    <header class="bg-white/90 backdrop-blur-xl px-6 pt-safe pb-4 sticky top-0 z-nav border-b border-slate-100 shadow-sm">
         <div class="flex justify-between items-center mt-2">
             <div class="flex items-center gap-3 cursor-pointer group action-btn" onclick="toggleWeekMenu()">
                 <div class="bg-slate-900 text-white p-3 rounded-2xl shadow-lg shadow-slate-200 group-active:scale-95 transition">
@@ -96,16 +107,28 @@
     </header>
 
     <!-- MENU SEMANAL -->
-    <div id="week-menu" class="hidden absolute top-28 left-0 w-full bg-white/95 backdrop-blur-xl z-40 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] border-b border-slate-100 rounded-b-[2rem] transition-all">
-        <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+    <div id="week-menu" class="hidden absolute top-28 left-0 w-full bg-white/95 backdrop-blur-xl z-nav shadow-2xl border-b border-slate-100 rounded-b-[2rem] transition-all max-h-[70vh] overflow-y-auto flex flex-col">
+        <div class="p-5 border-b border-slate-100 flex justify-between items-center shrink-0">
             <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Navegar</span>
             <button onclick="jumpToCurrentWeek()" class="action-btn text-xs bg-slate-900 text-white px-4 py-2 rounded-full font-bold shadow hover:bg-slate-800 transition">Ir a Hoy</button>
         </div>
-        <div class="p-4 grid grid-cols-1 gap-2 max-h-[50vh] overflow-y-auto" id="week-list-container"></div>
+        <div class="p-4 bg-slate-50 border-b border-slate-100">
+            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Seguridad de Datos</h4>
+            <div class="flex gap-2">
+                <button onclick="downloadBackup()" class="flex-1 py-3 bg-white border border-indigo-100 text-indigo-600 text-xs font-bold rounded-xl shadow-sm hover:bg-indigo-50 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-download"></i> Guardar
+                </button>
+                <button onclick="document.getElementById('restore-input').click()" class="flex-1 py-3 bg-white border border-emerald-100 text-emerald-600 text-xs font-bold rounded-xl shadow-sm hover:bg-emerald-50 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-upload"></i> Cargar
+                </button>
+                <input type="file" id="restore-input" class="hidden" onchange="restoreBackup(this)">
+            </div>
+        </div>
+        <div class="p-4 grid grid-cols-1 gap-2 overflow-y-auto" id="week-list-container"></div>
     </div>
 
     <!-- AREA PRINCIPAL -->
-    <main class="flex-1 overflow-y-auto relative z-10 w-full scroll-smooth" id="main-scroll">
+    <main class="flex-1 overflow-y-auto relative z-content w-full scroll-smooth" id="main-scroll">
         <div id="ai-briefing-container" class="hidden mx-5 mt-5 mb-2 p-5 bg-white border border-indigo-50 rounded-3xl shadow-sm relative animate-fade-in-down">
             <button onclick="document.getElementById('ai-briefing-container').classList.add('hidden')" class="action-btn absolute top-4 right-4 text-slate-300 hover:text-slate-500"><i class="fas fa-times text-sm"></i></button>
             <div class="flex gap-4">
@@ -117,7 +140,7 @@
             </div>
         </div>
 
-        <div class="sticky top-0 bg-[#f8fafc]/95 backdrop-blur-md z-20 px-6 pt-6 pb-2 transition-all">
+        <div class="sticky top-0 bg-[#f8fafc]/95 backdrop-blur-md z-content px-6 pt-6 pb-2 transition-all">
             <div class="flex justify-between items-start mb-2">
                 <div>
                     <h2 id="day-display-title" class="text-3xl font-black text-slate-900 tracking-tight capitalize leading-none">--</h2>
@@ -133,12 +156,12 @@
     </main>
 
     <!-- NAVEGACIÓN INFERIOR -->
-    <nav class="glass-nav pb-safe shrink-0 z-30 fixed bottom-0 w-full shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
+    <nav class="glass-nav pb-safe shrink-0 z-nav fixed bottom-0 w-full shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
         <div class="flex justify-between px-6 py-3 overflow-x-auto hide-scrollbar gap-2" id="bottom-nav"></div>
     </nav>
 
     <!-- BOTONES FLOTANTES -->
-    <div class="fixed bottom-28 right-6 flex flex-col gap-4 z-40 pointer-events-none">
+    <div class="fixed bottom-28 right-6 flex flex-col gap-4 z-fab pointer-events-none">
         <button onclick="openWarehouseModal()" class="action-btn pointer-events-auto w-14 h-14 bg-white text-slate-600 rounded-full shadow-xl shadow-slate-300/30 flex items-center justify-center border border-slate-100 active:scale-90 transition transform hover:-translate-y-1">
             <i class="fas fa-box-archive text-lg"></i>
         </button>
@@ -151,8 +174,8 @@
     </div>
 
     <!-- MODAL PRINCIPAL -->
-    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/30 z-50 hidden flex flex-col justify-end backdrop-blur-sm transition-opacity duration-300" onclick="if(event.target === this) closeModal()">
-        <div class="bg-white w-full rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] transition-transform transform translate-y-full" id="modal-card">
+    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 z-modal-overlay hidden flex flex-col justify-end backdrop-blur-sm transition-opacity duration-300" onclick="if(event.target === this) closeModal()">
+        <div class="bg-white w-full rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] modal-card z-modal-card" id="modal-card">
             <div class="px-8 py-6 flex justify-between items-center bg-white sticky top-0 z-20 border-b border-slate-50">
                 <div>
                     <h3 class="font-bold text-2xl text-slate-900 leading-none" id="modal-title">Detalles</h3>
@@ -215,10 +238,8 @@
                         <div class="flex justify-between items-center mb-3 px-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Categoría</label>
                             
-                            <!-- Botón Original -->
                             <button id="btn-add-cat" type="button" onclick="window.toggleNewCatUI()" class="action-btn text-[10px] font-bold text-blue-600 hover:underline transition">+ Nueva</button>
                             
-                            <!-- Input Inline -->
                             <div id="input-add-cat-group" class="hidden flex items-center gap-1">
                                 <input type="text" id="input-new-cat-emoji" placeholder="Icono" class="w-8 text-[10px] p-1.5 border border-slate-200 rounded-lg bg-slate-50 text-center focus:bg-white outline-none" value="⚡">
                                 <input type="text" id="input-new-cat-name" placeholder="Nombre..." class="w-20 text-[10px] p-1.5 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white outline-none">
@@ -235,9 +256,9 @@
         </div>
     </div>
 
-    <!-- MODAL METAS Y ALMACÉN -->
-    <div id="goals-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex flex-col justify-end backdrop-blur-sm transition-opacity duration-300" onclick="if(event.target === this) closeGoalsModal()">
-        <div class="bg-white w-full rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-transform transform translate-y-full" id="goals-card">
+    <!-- MODAL METAS -->
+    <div id="goals-overlay" class="fixed inset-0 bg-slate-900/40 z-modal-overlay hidden flex flex-col justify-end backdrop-blur-sm transition-opacity duration-300" onclick="if(event.target === this) closeGoalsModal()">
+        <div class="bg-white w-full rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] modal-card z-modal-card" id="goals-card">
             <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
                 <div><h3 class="font-bold text-2xl text-slate-900 leading-none">Metas 2026</h3></div>
                 <button onclick="closeGoalsModal()" class="action-btn w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition"><i class="fas fa-times text-lg"></i></button>
@@ -261,8 +282,8 @@
         </div>
     </div>
 
-    <div id="warehouse-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex flex-col justify-end backdrop-blur-sm transition-opacity duration-300" onclick="if(event.target === this) closeWarehouseModal()">
-        <div class="bg-white w-full rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-transform transform translate-y-full" id="warehouse-card">
+    <div id="warehouse-overlay" class="fixed inset-0 bg-slate-900/40 z-modal-overlay hidden flex flex-col justify-end backdrop-blur-sm transition-opacity duration-300" onclick="if(event.target === this) closeWarehouseModal()">
+        <div class="bg-white w-full rounded-t-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] modal-card z-modal-card" id="warehouse-card">
             <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
                 <div><h3 class="font-bold text-2xl text-slate-900 leading-none">Almacén</h3></div>
                 <button onclick="closeWarehouseModal()" class="action-btn w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition"><i class="fas fa-times text-lg"></i></button>
@@ -417,7 +438,32 @@
         window.setNow = function(id) { const d=new Date(); document.getElementById(id).value = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
         window.saveData = function() { localStorage.setItem('agenda2026_vFINAL_RESTORED', JSON.stringify(appData)); }
 
-        // --- ASISTENTE TÉCNICO (COPILOT) ---
+        // --- BACKUP ---
+        window.downloadBackup = function() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+            const node = document.createElement('a');
+            node.setAttribute("href", dataStr);
+            node.setAttribute("download", "agenda_backup.json");
+            document.body.appendChild(node);
+            node.click();
+            node.remove();
+        }
+        window.restoreBackup = function(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    appData = JSON.parse(e.target.result);
+                    if(!appData.categories) appData.categories = defaultCats;
+                    window.saveData();
+                    window.location.reload();
+                } catch(err) { alert("Error"); }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- ASISTENTE TÉCNICO ---
         window.getTransitionTip = function(prev, next) {
             if (prev.cat === 'fisico' && next.cat === 'aseo') return `💦 <strong>Post-Entreno:</strong> Alista toalla y muda limpia.`;
             if (prev.cat === 'aseo' && next.title.includes('Chef')) return `👨‍🍳 <strong>Cocina:</strong> Pon música y revisa ingredientes.`;
@@ -468,26 +514,21 @@
         window.renderTimeline = function() {
             const items = appData.weeks[appData.currentWeekId][appData.currentDayKey].items;
             items.sort((a,b) => window.timeToMins(a.start) - window.timeToMins(b.start));
-            
             const container = document.getElementById('timeline-container');
             container.innerHTML = '<div class="timeline-track"></div>';
-            
-            if(items.length === 0) {
-                container.innerHTML += `<div class="text-center p-10 text-slate-400 italic">Día Libre</div>`;
-                return;
-            }
-
+            if(items.length === 0) { container.innerHTML += `<div class="text-center p-10 text-slate-400 italic">Día Libre</div>`; return; }
             let lastEndTime = 0;
             const nowMins = window.getNowMins();
 
             items.forEach((item, index) => {
                 const catData = appData.categories[item.cat] || defaultCats.casa;
                 const iconHTML = catData.icon.startsWith('fa-') ? `<i class="fas ${catData.icon}"></i>` : `<span>${catData.icon}</span>`;
-                
                 let borderClass = `border-${catData.color}-500`;
                 let iconClass = `text-${catData.color}-600`;
-                const map = { green: {b:"border-green-500", i:"text-green-600"}, blue: {b:"border-blue-500", i:"text-blue-600"}, red: {b:"border-red-500", i:"text-red-600"}, amber: {b:"border-amber-500", i:"text-amber-600"}, purple: {b:"border-purple-500", i:"text-purple-600"}, slate: {b:"border-slate-500", i:"text-slate-600"}, cyan: {b:"border-cyan-400", i:"text-cyan-600"} };
-                if(map[catData.color]) { borderClass = map[catData.color].b; iconClass = map[catData.color].i; } else { borderClass = "border-gray-300"; iconClass = "text-gray-400"; }
+                if(['green','blue','red','amber','purple','slate','cyan'].indexOf(catData.color) === -1) { borderClass = `border-${catData.color}-400`; iconClass = `text-${catData.color}-600`; } 
+                
+                // Fallback de colores estándar si es custom
+                if(!catData.color) { borderClass = "border-gray-300"; iconClass = "text-gray-500"; }
 
                 const startMins = window.timeToMins(item.start);
                 
@@ -498,16 +539,13 @@
                         const gapHtml = `<div class="gap-card ml-2 mb-2 border-2 border-dashed border-blue-200 p-2 rounded-lg bg-blue-50/50 flex justify-between items-center transition cursor-pointer action-btn" onclick="openGapModal(${lastEndTime}, ${gap})"><div><span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest block">⚡ Tiempo Libre</span><span class="text-xs font-bold text-blue-600">${gap} min</span></div><i class="fas fa-plus text-blue-300"></i></div>`;
                         container.insertAdjacentHTML('beforeend', `<div class="relative pl-12 mb-3">${gapHtml}</div>`);
                     }
-                    
-                    // COPILOT BUBBLE INSERTION
                     const tip = window.getTransitionTip(prevItem, item);
-                    if (tip) {
-                         container.insertAdjacentHTML('beforeend', `<div class="copilot-bubble"><div class="copilot-icon"><i class="fas fa-robot text-[10px]"></i></div><p>${tip}</p></div>`);
-                    }
+                    if (tip) container.insertAdjacentHTML('beforeend', `<div class="copilot-bubble"><div class="copilot-icon"><i class="fas fa-robot text-[10px]"></i></div><p>${tip}</p></div>`);
                 }
                 
-                lastEndTime = item.end ? window.timeToMins(item.end) : startMins + 60;
-                const isLive = (!item.end && nowMins >= startMins) || (item.end && nowMins >= startMins && nowMins < window.timeToMins(item.end));
+                let itemEndMins = item.end ? window.timeToMins(item.end) : startMins + 60;
+                lastEndTime = itemEndMins;
+                const isLive = (!item.end && nowMins >= startMins) || (item.end && nowMins >= startMins && nowMins < itemEndMins);
                 const liveClass = isLive ? "live-glow" : "";
                 const skipClass = item.skipped ? "skipped-card" : "";
                 const titleClass = item.skipped ? "skipped-text" : "";
@@ -522,13 +560,9 @@
             activeEvent = items.find(i => String(i.id) === String(id)); 
             if(!activeEvent) return;
 
-            // Reset delete state
             deleteConfirmState = false;
             const btn = document.getElementById('btn-delete-event');
-            if(btn) {
-                btn.innerHTML = "BORRAR";
-                btn.classList.remove('btn-confirm-delete');
-            }
+            if(btn) { btn.innerHTML = "BORRAR"; btn.classList.remove('btn-confirm-delete'); }
 
             document.getElementById('modal-title').innerText = activeEvent.title;
             const endTxt = activeEvent.end ? activeEvent.end : "En Progreso";
@@ -542,16 +576,19 @@
             const now = window.getNowMins();
             const start = window.timeToMins(activeEvent.start);
             const end = activeEvent.end ? window.timeToMins(activeEvent.end) : start+60;
-            document.getElementById('live-controls').classList.toggle('hidden', !(now >= start && now < end));
-
+            // FIX: Botón disponible siempre si es abierto O si está en curso
+            const showFinish = !activeEvent.end || (now >= start && now < end);
+            document.getElementById('live-controls').classList.toggle('hidden', !showFinish);
+            
+            // Toggle active class for animation
             const card = document.getElementById('modal-card');
             document.getElementById('modal-overlay').classList.remove('hidden');
-            setTimeout(() => card.classList.remove('translate-y-full'), 10);
+            setTimeout(() => card.classList.add('active'), 10);
         }
 
         window.closeModal = function() {
             const card = document.getElementById('modal-card');
-            card.classList.add('translate-y-full');
+            card.classList.remove('active');
             setTimeout(() => { document.getElementById('modal-overlay').classList.add('hidden'); activeEvent = null; }, 300);
         }
         
@@ -561,27 +598,15 @@
             document.getElementById('view-mode-content').classList.add('hidden');
             document.getElementById('event-form').classList.add('hidden');
             document.getElementById('gap-mode-content').classList.remove('hidden');
-            
             const grid = document.getElementById('gap-suggestions-grid');
             grid.innerHTML = "";
-            let options = [];
-            
-            if (duration <= 30) {
-                options = [{title: "Flashcards", cat: "estudio", icon: "fa-bolt", desc: "Repaso veloz"}, {title: "Orden Rápido", cat: "casa", icon: "fa-broom", desc: "Despeja mente"}, {title: "Skincare", cat: "aseo", icon: "fa-spray-can", desc: "Refrescarse"}];
-            } else if (duration <= 60) {
-                options = [{title: "Siesta Táctica", cat: "casa", icon: "fa-bed", desc: "20 min power nap"}, {title: "Lectura", cat: "estudio", icon: "fa-book-open", desc: "Un capítulo"}, {title: "Adelantar App", cat: "estudio", icon: "fa-code", desc: "Avanzar código"}];
-            } else {
-                options = [{title: "Bloque Estudio", cat: "estudio", icon: "fa-brain", desc: "Sesión profunda"}, {title: "Gym Express", cat: "fisico", icon: "fa-running", desc: "Rutina corta"}, {title: "Serie TV", cat: "social", icon: "fa-tv", desc: "Descanso total"}];
-            }
-            
-            options.forEach(opt => { 
-                grid.innerHTML += `<button onclick="fillGap('${opt.title}', '${opt.cat}')" class="suggestion-card p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-blue-300 hover:bg-blue-50 transition text-left flex items-center gap-4 group w-full"><div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center group-hover:scale-110 transition"><i class="fas ${opt.icon}"></i></div><div><div class="font-bold text-slate-700 text-sm">${opt.title}</div><div class="text-xs text-slate-400">${opt.desc}</div></div></button>`; 
-            });
+            const options = [{title: "Flashcards", cat: "estudio", icon: "fa-bolt", desc: "Repaso veloz"}, {title: "Orden Rápido", cat: "casa", icon: "fa-broom", desc: "Despeja mente"}, {title: "Skincare", cat: "aseo", icon: "fa-spray-can", desc: "Refrescarse"}];
+            options.forEach(opt => { grid.innerHTML += `<button onclick="fillGap('${opt.title}', '${opt.cat}')" class="suggestion-card p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-blue-300 hover:bg-blue-50 transition text-left flex items-center gap-4 group w-full"><div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center group-hover:scale-110 transition"><i class="fas ${opt.icon}"></i></div><div><div class="font-bold text-slate-700 text-sm">${opt.title}</div><div class="text-xs text-slate-400">${opt.desc}</div></div></button>`; });
             document.getElementById('modal-title').innerText = "Oportunidad";
             document.getElementById('modal-time-range').innerText = `Inicio: ${window.minsToTime(startMins)}`;
             const card = document.getElementById('modal-card');
             document.getElementById('modal-overlay').classList.remove('hidden');
-            setTimeout(() => card.classList.remove('translate-y-full'), 10);
+            setTimeout(() => card.classList.add('active'), 10);
         }
 
         window.fillGap = function(title, cat) {
@@ -631,30 +656,12 @@
             const list = document.getElementById('checklist-container');
             list.innerHTML = "";
             (activeEvent.check || []).forEach((task, idx) => {
-                list.innerHTML += `
-                    <li class="flex items-center justify-between p-3 bg-slate-50 rounded-xl mb-2 group">
-                        <div class="flex items-center gap-3 flex-1 cursor-pointer" onclick="window.toggleCheck(${idx})">
-                            <div class="w-5 h-5 rounded border ${task.done ? 'bg-green-500 border-green-500' : 'border-slate-300 bg-white'} flex items-center justify-center transition-colors">
-                                ${task.done ? '<i class="fas fa-check text-white text-[10px]"></i>' : ''}
-                            </div>
-                            <span class="text-sm ${task.done ? 'line-through text-slate-400' : 'text-slate-700'}">${task.text}</span>
-                        </div>
-                        <div class="flex gap-1 checklist-item-actions">
-                            <button onclick="window.removeCheckItem(${idx})" class="w-8 h-8 flex items-center justify-center rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 transition action-btn">
-                                <i class="fas fa-trash-alt text-xs"></i>
-                            </button>
-                        </div>
-                    </li>`;
+                list.innerHTML += `<li class="flex items-center justify-between p-3 bg-slate-50 rounded-xl mb-2 group"><div class="flex items-center gap-3 flex-1 cursor-pointer" onclick="window.toggleCheck(${idx})"><div class="w-5 h-5 rounded border ${task.done ? 'bg-green-500 border-green-500' : 'border-slate-300 bg-white'} flex items-center justify-center transition-colors">${task.done ? '<i class="fas fa-check text-white text-[10px]"></i>' : ''}</div><span class="text-sm ${task.done ? 'line-through text-slate-400' : 'text-slate-700'}">${task.text}</span></div><div class="flex gap-1 checklist-item-actions"><button onclick="window.removeCheckItem(${idx})" class="w-8 h-8 flex items-center justify-center rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 transition action-btn"><i class="fas fa-trash-alt text-xs"></i></button></div></li>`;
             });
         }
 
         window.toggleCheck = function(idx) { activeEvent.check[idx].done = !activeEvent.check[idx].done; window.saveData(); window.renderChecklist(); }
-        
-        window.removeCheckItem = function(idx) { 
-            activeEvent.check.splice(idx, 1); 
-            window.saveData(); 
-            window.renderChecklist(); 
-        }
+        window.removeCheckItem = function(idx) { activeEvent.check.splice(idx, 1); window.saveData(); window.renderChecklist(); }
         
         window.addCheckItem = function() {
             const input = document.getElementById('new-check-item');
@@ -678,44 +685,30 @@
             window.renderCategories();
             const card = document.getElementById('modal-card');
             document.getElementById('modal-overlay').classList.remove('hidden');
-            setTimeout(() => card.classList.remove('translate-y-full'), 10);
+            setTimeout(() => card.classList.add('active'), 10);
         }
 
         window.toggleNewCatUI = function() {
             const btn = document.getElementById('btn-add-cat');
             const inputGroup = document.getElementById('input-add-cat-group');
-            
-            if (inputGroup.classList.contains('hidden')) {
-                btn.classList.add('hidden');
-                inputGroup.classList.remove('hidden');
-                document.getElementById('input-new-cat-name').focus();
-            } else {
-                btn.classList.remove('hidden');
-                inputGroup.classList.add('hidden');
-            }
+            if (inputGroup.classList.contains('hidden')) { btn.classList.add('hidden'); inputGroup.classList.remove('hidden'); document.getElementById('input-new-cat-name').focus(); } 
+            else { btn.classList.remove('hidden'); inputGroup.classList.add('hidden'); }
         }
 
         window.saveNewCategory = function() {
             const nameInput = document.getElementById('input-new-cat-name');
             const emojiInput = document.getElementById('input-new-cat-emoji');
-            
             const name = nameInput.value.trim();
             const emoji = emojiInput.value.trim() || "⚡"; 
-            
             if (!name) { window.toggleNewCatUI(); return; }
-            
             const id = name.toLowerCase().replace(/\s+/g, '');
             const colors = ['pink', 'indigo', 'teal', 'orange', 'green', 'blue', 'purple', 'red'];
             const color = colors[Math.floor(Math.random() * colors.length)];
-            
             appData.categories[id] = { label: name, color: color, icon: emoji };
             window.saveData();
             window.renderCategories();
             window.selectCat(id);
-            
-            nameInput.value = "";
-            emojiInput.value = "⚡";
-            window.toggleNewCatUI();
+            nameInput.value = ""; emojiInput.value = "⚡"; window.toggleNewCatUI();
         }
 
         window.renderCategories = function() {
@@ -726,21 +719,11 @@
                 const borderColor = `border-${color}-200`;
                 const textColor = `text-${color}-600`;
                 const bgColor = `bg-${color}-50`;
-                
                 const iconHTML = val.icon.startsWith('fa-') ? `<i class="fas ${val.icon} text-lg mb-1 opacity-80"></i>` : `<span class="text-lg mb-1 block">${val.icon}</span>`;
                 const isDefault = defaultCats[key] !== undefined;
-                
                 let btnGroup = '';
-                if (!isDefault) {
-                    btnGroup = `<div onclick="event.stopPropagation(); window.deleteCategory(event, '${key}')" class="cat-delete-btn"><i class="fas fa-times"></i></div>`;
-                }
-
-                grid.innerHTML += `
-                    <div onclick="window.selectCat('${key}')" class="cat-select cursor-pointer p-2 rounded-xl border ${borderColor} ${bgColor} ${textColor} text-center transition hover:opacity-80 active:scale-95" data-val="${key}">
-                        ${btnGroup}
-                        ${iconHTML}
-                        <span class="block text-[8px] font-bold uppercase truncate">${val.label}</span>
-                    </div>`;
+                if (!isDefault) { btnGroup = `<div onclick="event.stopPropagation(); window.deleteCategory(event, '${key}')" class="cat-delete-btn"><i class="fas fa-times"></i></div>`; }
+                grid.innerHTML += `<div onclick="window.selectCat('${key}')" class="cat-select cursor-pointer p-2 rounded-xl border ${borderColor} ${bgColor} ${textColor} text-center transition hover:opacity-80 active:scale-95" data-val="${key}">${btnGroup}${iconHTML}<span class="block text-[8px] font-bold uppercase truncate">${val.label}</span></div>`;
             });
         }
 
@@ -755,17 +738,14 @@
             e.preventDefault(); 
             if(confirm(`¿Eliminar categoría "${appData.categories[key].label}"?`)) {
                 delete appData.categories[key];
-                if(document.getElementById('input-cat').value === key) {
-                    window.selectCat('casa');
-                }
+                if(document.getElementById('input-cat').value === key) window.selectCat('casa');
                 window.saveData();
                 window.renderCategories();
             }
         }
 
-        // ... (resto de funciones Goals/Warehouse igual que antes) ...
-        window.openGoalsModal = function() { window.renderGoals(); document.getElementById('goals-card').parentElement.classList.remove('hidden'); setTimeout(()=>document.getElementById('goals-card').classList.remove('translate-y-full'),10); }
-        window.closeGoalsModal = function() { document.getElementById('goals-card').classList.add('translate-y-full'); setTimeout(()=>document.getElementById('goals-card').parentElement.classList.add('hidden'),300); }
+        window.openGoalsModal = function() { window.renderGoals(); document.getElementById('goals-card').parentElement.classList.remove('hidden'); setTimeout(()=>document.getElementById('goals-card').classList.add('active'),10); }
+        window.closeGoalsModal = function() { document.getElementById('goals-card').classList.remove('active'); setTimeout(()=>document.getElementById('goals-card').parentElement.classList.add('hidden'),300); }
         window.renderGoals = function() {
             const container = document.getElementById('goals-list-container');
             container.innerHTML = "";
@@ -796,8 +776,8 @@
         window.generateGoalPlan = async function(id) { const goal = appData.goals.find(g => String(g.id) === String(id)); if(!goal) return; const btn = event.currentTarget; const originalHTML = btn.innerHTML; btn.innerHTML = `<i class="fas fa-spinner fa-spin text-indigo-500"></i>`; setTimeout(() => { goal.steps = ["Paso 1: Planificar", "Paso 2: Ejecutar", "Paso 3: Revisar"]; window.saveData(); window.renderGoals(); }, 1000); }
         window.toggleGoalType = function(type) { newGoalType = type; const btnSimple = document.getElementById('btn-type-simple'); const btnSavings = document.getElementById('btn-type-savings'); if (type === 'simple') { btnSimple.className = "action-btn flex-1 py-3 rounded-lg text-sm font-bold bg-slate-900 text-white transition shadow-sm"; btnSavings.className = "action-btn flex-1 py-3 rounded-lg text-sm font-bold text-slate-400 hover:bg-slate-50 transition"; document.getElementById('savings-inputs').classList.add('hidden'); } else { btnSimple.className = "action-btn flex-1 py-3 rounded-lg text-sm font-bold text-slate-400 hover:bg-slate-50 transition"; btnSavings.className = "action-btn flex-1 py-3 rounded-lg text-sm font-bold bg-slate-900 text-white transition shadow-sm"; document.getElementById('savings-inputs').classList.remove('hidden'); } }
         
-        window.openWarehouseModal = function() { window.renderWarehouse(); document.getElementById('warehouse-card').parentElement.classList.remove('hidden'); setTimeout(()=>document.getElementById('warehouse-card').classList.remove('translate-y-full'),10); }
-        window.closeWarehouseModal = function() { document.getElementById('warehouse-card').classList.add('translate-y-full'); setTimeout(()=>document.getElementById('warehouse-card').parentElement.classList.add('hidden'),300); }
+        window.openWarehouseModal = function() { window.renderWarehouse(); document.getElementById('warehouse-card').parentElement.classList.remove('hidden'); setTimeout(()=>document.getElementById('warehouse-card').classList.add('active'),10); }
+        window.closeWarehouseModal = function() { document.getElementById('warehouse-card').classList.remove('active'); setTimeout(()=>document.getElementById('warehouse-card').parentElement.classList.add('hidden'),300); }
         window.addToWarehouse = function() { const input = document.getElementById('warehouse-input'); const val = input.value.trim(); if(val) { const cat = document.getElementById('warehouse-cat-select').value; appData.warehouse.push({ id: Date.now().toString(), text: val, cat: cat, date: new Date().toLocaleDateString('es-ES') }); input.value = ""; window.saveData(); window.renderWarehouse(); } }
         window.deleteWarehouseItem = function(id) { appData.warehouse = appData.warehouse.filter(i => String(i.id) !== String(id)); window.saveData(); window.renderWarehouse(); }
         window.renderWarehouse = function() { const list = document.getElementById('warehouse-list'); list.innerHTML = ""; let items = appData.warehouse; if(activeFilter !== 'all') items = items.filter(i => i.cat === activeFilter); const catConfig = { ideas: { color: "yellow", icon: "fa-lightbulb", label: "Idea" }, compras: { color: "green", icon: "fa-shopping-cart", label: "Compra" }, links: { color: "blue", icon: "fa-link", label: "Link" }, otros: { color: "purple", icon: "fa-box", label: "Varios" } }; items.slice().reverse().forEach(item => { const conf = catConfig[item.cat] || catConfig.otros; list.innerHTML += `<div class="warehouse-card bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-3 group"><div class="w-8 h-8 rounded-full bg-${conf.color}-50 text-${conf.color}-500 flex items-center justify-center shrink-0"><i class="fas ${conf.icon} text-xs"></i></div><div class="flex-1"><p class="text-slate-800 font-medium text-sm leading-snug">${item.text}</p><span class="text-[10px] text-slate-400 font-bold mt-1 inline-block">${conf.label} • ${item.date}</span></div><div class="flex gap-1"><button onclick="window.planWarehouseItem('${item.id}')" class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-500 transition action-btn"><i class="fas fa-calendar-plus text-[10px]"></i></button><button onclick="window.editWarehouseItem('${item.id}')" class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-slate-100 hover:text-slate-600 transition action-btn"><i class="fas fa-pen text-[10px]"></i></button><button onclick="window.deleteWarehouseItem('${item.id}')" class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-red-50 hover:text-red-400 transition action-btn"><i class="fas fa-times text-[10px]"></i></button></div></div>`; }); }
